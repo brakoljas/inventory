@@ -148,6 +148,24 @@
     }
     .modalTitle{ font-weight:900; font-size:14px; }
     .modalSub{ color:var(--muted); font-size:12px; margin-top:4px; }
+
+    /* Presets */
+    .preset{
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(35,40,74,.45);
+      cursor:pointer;
+      font-size:12px;
+      color:var(--muted);
+      user-select:none;
+    }
+    .preset:hover{ border-color:#3a4290; color:var(--text); }
+    .preset.on{
+      border-color:rgba(122,162,255,.55);
+      background:rgba(122,162,255,.12);
+      color:var(--text);
+    }
   </style>
 </head>
 <body>
@@ -304,9 +322,18 @@
 
     <div class="hr"></div>
 
+    <!-- Presets bar -->
+    <div class="inline" style="margin-top:6px;">
+      <div class="small">Пресеты:</div>
+      <div class="inline" id="presetBar" style="gap:8px;"></div>
+    </div>
+
+    <div class="hr"></div>
+
     <div class="inline">
       <button class="btn" id="btnCancelModal" type="button">Отмена</button>
       <div class="right inline">
+        <button class="btn" id="btnSaveMoreModal" type="button">Сохранить и ещё</button>
         <button class="btn acc" id="btnSaveModal" type="button">Сохранить</button>
       </div>
     </div>
@@ -356,6 +383,8 @@
   const btnCloseModal = document.getElementById('btnCloseModal');
   const btnCancelModal = document.getElementById('btnCancelModal');
   const btnSaveModal = document.getElementById('btnSaveModal');
+  const btnSaveMoreModal = document.getElementById('btnSaveMoreModal');
+  const presetBar = document.getElementById('presetBar');
   const btnPasteLink = document.getElementById('btnPasteLink');
   const addModalSub = document.getElementById('addModalSub');
 
@@ -371,6 +400,19 @@
     "оружие","доспехи","деньги","драгоценности","магические предметы",
     "ингредиенты","инструменты","расходники","снаряжение","прочее"
   ];
+
+  // Presets
+  const PRESETS = [
+    { key:'оружие', label:'Оружие', cat:'оружие', note:'' },
+    { key:'доспехи', label:'Доспех', cat:'доспехи', note:'' },
+    { key:'расходники', label:'Расходник', cat:'расходники', note:'заряды/дозы: ' },
+    { key:'деньги', label:'Деньги', cat:'деньги', note:'' },
+    { key:'маг', label:'Магический', cat:'магические предметы', note:'настройка: да/нет' },
+    { key:'ингр', label:'Ингредиент', cat:'ингредиенты', note:'качество/редкость: ' },
+    { key:'драг', label:'Драгоценность', cat:'драгоценности', note:'оценка: ' },
+    { key:'снар', label:'Снаряжение', cat:'снаряжение', note:'' },
+  ];
+  let activePresetKey = null;
 
   let activeTab = 'quick'; // 'quick' | 'catalog'
   let activeCategory = 'all';
@@ -529,6 +571,33 @@
     mCat.value = (activeTab === 'catalog') ? 'магические предметы' : 'снаряжение';
   }
 
+  function renderPresetBar(){
+    if(!presetBar) return;
+    presetBar.innerHTML = PRESETS.map(p => `
+      <span class="preset ${activePresetKey===p.key?'on':''}" data-preset="${p.key}">
+        ${p.label}
+      </span>
+    `).join('');
+
+    presetBar.querySelectorAll('[data-preset]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const key = el.dataset.preset;
+        const p = PRESETS.find(x=>x.key===key);
+        if(!p) return;
+
+        activePresetKey = key;
+        mCat.value = p.cat;
+
+        if(p.note && !(mNotes.value||'').trim()){
+          mNotes.value = p.note;
+          try{ mNotes.setSelectionRange(mNotes.value.length, mNotes.value.length); }catch(_){}
+        }
+
+        renderPresetBar();
+      });
+    });
+  }
+
   function openAddModal(){
     if(!inventoryId){
       toast("Сначала войдите в комнату");
@@ -545,6 +614,12 @@
     mEffect.value = '';
     mNotes.value = '';
 
+    // default preset per tab
+    activePresetKey = (activeTab === 'catalog') ? 'маг' : 'снар';
+    const def = PRESETS.find(p => p.key === activePresetKey);
+    if(def) mCat.value = def.cat;
+    renderPresetBar();
+
     addModal.classList.add('show');
     addModal.setAttribute('aria-hidden','false');
     setTimeout(()=> mName.focus(), 0);
@@ -555,7 +630,7 @@
     addModal.setAttribute('aria-hidden','true');
   }
 
-  async function addItemFromModal(){
+  async function addItemFromModal({ keepOpen=false } = {}){
     if(!inventoryId){
       toast("Сначала войдите в комнату");
       return;
@@ -595,8 +670,20 @@
 
     itemsCache = [data, ...itemsCache.filter(x=>x.id!==data.id)];
     toast("Добавлено");
-    closeAddModal();
     render();
+
+    if(keepOpen){
+      mName.value = '';
+      mQty.value = '1';
+      mUrl.value = '';
+      mEffect.value = '';
+      mNotes.value = '';
+      activePresetKey = null;
+      renderPresetBar();
+      mName.focus();
+    } else {
+      closeAddModal();
+    }
   }
 
   // --- supabase operations
@@ -967,7 +1054,8 @@
   // modal events
   btnCloseModal.addEventListener('click', closeAddModal);
   btnCancelModal.addEventListener('click', closeAddModal);
-  btnSaveModal.addEventListener('click', addItemFromModal);
+  btnSaveModal.addEventListener('click', ()=> addItemFromModal({ keepOpen:false }) );
+  btnSaveMoreModal.addEventListener('click', ()=> addItemFromModal({ keepOpen:true }) );
 
   addModal.addEventListener('click', (e)=>{
     if(e.target?.dataset?.close) closeAddModal();
@@ -975,10 +1063,15 @@
 
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && addModal.classList.contains('show')) closeAddModal();
-    if(e.key === 'Enter' && addModal.classList.contains('show')){
+
+    if(addModal.classList.contains('show') && e.key === 'Enter'){
+      // не мешаем переносам в textarea
       if(document.activeElement === mEffect) return;
+
+      // Ctrl/Cmd + Enter = "Сохранить и ещё"
       e.preventDefault();
-      addItemFromModal();
+      const keepOpen = e.ctrlKey || e.metaKey;
+      addItemFromModal({ keepOpen });
     }
   });
 
