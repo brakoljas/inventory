@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>D&D Инвентарь (онлайн)</title>
+  <style>
+    :root{
+      --bg:#0f1220; --panel:#171a2b; --panel2:#1d2140; --text:#e8ebff; --muted:#a8afd6;
+      --line:#2b3160; --acc:#7aa2ff; --bad:#ff6b6b; --good:#6bffb3; --chip:#23284a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 14px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background: radial-gradient(1200px 700px at 10% 0%, #1a1f3b 0%, var(--bg) 55%, #0b0d18 100%);
+      color:var(--text); font-family:var(--font); line-height:1.35;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:18px}
+    header{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding:14px 16px; background:rgba(23,26,43,.85); border:1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow); position:sticky; top:10px; backdrop-filter: blur(10px);
+      z-index:10;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .title h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.2px}
+    .title .sub{color:var(--muted);font-size:12px}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .btn{
+      border:1px solid var(--line); background: linear-gradient(180deg, #23284a, #171a2b);
+      color:var(--text); padding:9px 12px; border-radius: 12px; cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      font-weight:600; font-size:13px;
+    }
+    .btn:hover{border-color:#3a4290}
+    .btn.acc{border-color:rgba(122,162,255,.6)}
+    .btn.bad{border-color:rgba(255,107,107,.6)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .pill{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 10px; border-radius:999px; background:rgba(35,40,74,.7); border:1px solid var(--line);
+      color:var(--muted); font-size:12px;
+    }
+    .grid{display:grid; grid-template-columns: 360px 1fr; gap:14px; margin-top:14px}
+    @media (max-width: 980px){ .grid{grid-template-columns: 1fr} header{position:relative;top:auto} }
+    .card{
+      background: rgba(23,26,43,.9); border:1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding:14px;
+    }
+    .card h2{margin:0 0 10px 0; font-size:14px}
+    .muted{color:var(--muted); font-size:12px}
+    input, select, textarea{
+      width:100%; background:rgba(15,18,32,.8); border:1px solid var(--line); color:var(--text);
+      border-radius:12px; padding:10px 11px; outline:none; font-size:13px;
+    }
+    textarea{min-height:84px; resize:vertical}
+    label{font-size:12px;color:var(--muted)}
+    .formRow{display:grid; grid-template-columns: 1fr 110px; gap:10px}
+    .formRow3{display:grid; grid-template-columns: 1fr 120px 160px; gap:10px}
+    @media(max-width: 520px){ .formRow,.formRow3{grid-template-columns:1fr} }
+    .tabs{display:flex; gap:8px; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:10px}
+    .tab{
+      padding:9px 12px; border:1px solid var(--line); border-radius: 999px;
+      background:rgba(35,40,74,.35); cursor:pointer; font-weight:700; font-size:13px; color:var(--muted);
+    }
+    .tab.active{background:rgba(122,162,255,.14); border-color:rgba(122,162,255,.5); color:var(--text)}
+    .filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .chip{
+      padding:7px 10px; border-radius: 999px; border:1px solid var(--line); background:rgba(35,40,74,.5);
+      cursor:pointer; font-size:12px; color:var(--muted); user-select:none;
+    }
+    .chip.on{border-color:rgba(122,162,255,.5); background:rgba(122,162,255,.12); color:var(--text)}
+    .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+    .item{
+      border:1px solid var(--line); border-radius: var(--radius); background: rgba(29,33,64,.45);
+      padding:12px; display:flex; flex-direction:column; gap:10px;
+    }
+    .itemTop{display:flex; gap:10px; align-items:flex-start; justify-content:space-between}
+    .itemName{font-weight:800; font-size:14px}
+    .itemMeta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:12px}
+    .tag{background:rgba(35,40,74,.8); border:1px solid var(--line); padding:4px 8px; border-radius:999px}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+    .mini{
+      padding:7px 9px; border-radius: 10px; border:1px solid var(--line);
+      background: rgba(15,18,32,.7); color:var(--text); cursor:pointer; font-weight:700; font-size:12px;
+    }
+    .mini:hover{border-color:#3a4290}
+    .mini.bad{border-color:rgba(255,107,107,.5)}
+    .mini.acc{border-color:rgba(122,162,255,.5)}
+    .effectFrame{
+      border:1px dashed rgba(122,162,255,.35);
+      background: rgba(15,18,32,.55);
+      border-radius: 12px;
+      padding:10px;
+    }
+    .effectTitle{font-weight:800; font-size:12px; color:var(--muted); margin-bottom:6px}
+    .effectText{white-space:pre-wrap; font-size:13px}
+    .hr{height:1px;background:var(--line); margin:10px 0}
+    .small{font-size:12px;color:var(--muted)}
+    .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .right{margin-left:auto}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+    .toast{
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom:16px; background:rgba(23,26,43,.95); border:1px solid var(--line);
+      border-radius: 999px; padding:10px 14px; color:var(--text); font-size:13px;
+      box-shadow: var(--shadow); display:none; z-index:999;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1 id="hdrTitle">D&D Инвентарь (онлайн)</h1>
+      <div class="sub" id="hdrSub">Подключение…</div>
+    </div>
+    <div class="row">
+      <span class="pill" id="pillInv" title="Текущая комната" style="display:none;">
+        Комната: <span class="mono" id="pillCode"></span>
+      </span>
+      <button class="btn acc" id="btnOpenRoom">Открыть / Создать</button>
+      <button class="btn" id="btnSignOut">Сбросить сессию</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Комната инвентаря</h2>
+      <div class="small">
+        Вариант без регистрации: приложение делает анонимный вход и даёт доступ по коду комнаты.
+      </div>
+      <div class="hr"></div>
+
+      <div class="formRow">
+        <div>
+          <label>Код комнаты</label>
+          <input id="roomCode" placeholder="Например: APPLE-7F3K" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn acc" id="btnJoin">Войти</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="formRow">
+        <div>
+          <label>Название новой комнаты</label>
+          <input id="newTitle" placeholder="Например: Отряд «Септа Мелодия»" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn" id="btnCreate">Создать</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="small">
+        Текущая роль: <span class="mono" id="myRole">—</span><br/>
+        User ID: <span class="mono" id="myUid">—</span>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="small">
+        Подсказка: Owner создаёт комнату → даёт код игрокам → игроки заходят по коду.
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="tabs">
+        <div class="tab active" data-tab="quick">Инвентарь</div>
+        <div class="tab" data-tab="catalog">База (магические)</div>
+        <div class="right inline" style="margin-left:auto;">
+          <input id="search" placeholder="Поиск…" style="width:240px; max-width:55vw;" />
+          <label class="inline small" style="gap:8px; cursor:pointer;">
+            <input type="checkbox" id="onlyEffect" />
+            Только с эффектом
+          </label>
+        </div>
+      </div>
+
+      <div class="filters" id="filters"></div>
+
+      <div class="hr"></div>
+
+      <h2 id="addTitle">Добавить в инвентарь</h2>
+      <div class="formRow3">
+        <div>
+          <label>Название</label>
+          <input id="fName" placeholder="Например: Верёвка, 50 фт" />
+        </div>
+        <div>
+          <label>Кол-во</label>
+          <input id="fQty" type="number" min="0" step="1" value="1" />
+        </div>
+        <div>
+          <label>Категория</label>
+          <select id="fCat"></select>
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px;">
+        <div>
+          <label>Ссылка (опционально)</label>
+          <input id="fUrl" placeholder="https://…" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn acc" id="btnAdd">Добавить</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;">
+        <label>Эффект / описание (если есть — появится отдельный фрейм)</label>
+        <textarea id="fEffect" placeholder="Например: Пока предмет при вас, вы получаете…"></textarea>
+      </div>
+
+      <div style="margin-top:10px;">
+        <label>Заметка (опционально)</label>
+        <input id="fNotes" placeholder="Например: требует настройку, заряды 3/3" />
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="inline">
+        <div class="small" id="stateLine">Комната не выбрана.</div>
+        <div class="right inline">
+          <button class="btn" id="btnSeedMagic">Заполнить базу примерами</button>
+        </div>
+      </div>
+
+      <div class="list" id="list"></div>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
+
+  // 1) ВСТАВЬ СЮДА СВОИ ДАННЫЕ
+  const SUPABASE_URL = "PASTE_SUPABASE_URL_HERE";
+  const SUPABASE_ANON_KEY = "PASTE_SUPABASE_ANON_KEY_HERE";
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // --- UI refs
+  const hdrSub = document.getElementById('hdrSub');
+  const hdrTitle = document.getElementById('hdrTitle');
+  const pillInv = document.getElementById('pillInv');
+  const pillCode = document.getElementById('pillCode');
+  const btnOpenRoom = document.getElementById('btnOpenRoom');
+  const btnSignOut = document.getElementById('btnSignOut');
+
+  const roomCode = document.getElementById('roomCode');
+  const btnJoin = document.getElementById('btnJoin');
+  const newTitle = document.getElementById('newTitle');
+  const btnCreate = document.getElementById('btnCreate');
+
+  const myUid = document.getElementById('myUid');
+  const myRole = document.getElementById('myRole');
+
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const addTitle = document.getElementById('addTitle');
+  const filtersEl = document.getElementById('filters');
+
+  const searchEl = document.getElementById('search');
+  const onlyEffectEl = document.getElementById('onlyEffect');
+
+  const fName = document.getElementById('fName');
+  const fQty = document.getElementById('fQty');
+  const fCat = document.getElementById('fCat');
+  const fUrl = document.getElementById('fUrl');
+  const fEffect = document.getElementById('fEffect');
+  const fNotes = document.getElementById('fNotes');
+  const btnAdd = document.getElementById('btnAdd');
+
+  const btnSeedMagic = document.getElementById('btnSeedMagic');
+  const stateLine = document.getElementById('stateLine');
+  const listEl = document.getElementById('list');
+
+  const toastEl = document.getElementById('toast');
+
+  // --- app state
+  const CATEGORIES = [
+    "оружие","доспехи","деньги","драгоценности","магические предметы",
+    "ингредиенты","инструменты","расходники","снаряжение","прочее"
+  ];
+
+  let activeTab = 'quick'; // 'quick' | 'catalog'
+  let activeCategory = 'all';
+  let inventoryId = null;
+  let currentJoinCode = null;
+  let sessionUserId = null;
+  let membershipRole = null;
+
+  let itemsCache = []; // items from supabase for current inventory
+  let realtimeChannel = null;
+
+  // --- helpers
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.style.display = 'block';
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(()=> toastEl.style.display='none', 2200);
+  }
+
+  function randCode(){
+    // читаемый код: WORD-XXXX
+    const words = ["APPLE","RUNE","SWORD","OAK","MOON","FROST","WIND","FIRE","LAKE","IRON","GOLD","STONE"];
+    const w = words[Math.floor(Math.random()*words.length)];
+    const x = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4).padEnd(4,'X');
+    return `${w}-${x}`;
+  }
+
+  function setHeader(){
+    if(!inventoryId){
+      hdrSub.textContent = "Комната не выбрана";
+      pillInv.style.display = "none";
+      return;
+    }
+    hdrSub.textContent = `Онлайн. Роль: ${membershipRole || '—'}`;
+    pillInv.style.display = "inline-flex";
+    pillCode.textContent = currentJoinCode || '—';
+  }
+
+  function setTab(tab){
+    activeTab = tab;
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    addTitle.textContent = tab === 'quick' ? 'Добавить в инвентарь' : 'Добавить в базу (магические)';
+    // В базе по умолчанию категория "магические предметы"
+    if(tab === 'catalog' && (activeCategory === 'all')) {
+      // не принуждаем, но удобно держать рядом:
+    }
+    render();
+  }
+
+  function fillCategories(){
+    fCat.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    fCat.value = (activeTab === 'catalog') ? 'магические предметы' : 'снаряжение';
+  }
+
+  function renderFilters(){
+    const cats = ['all', ...CATEGORIES];
+    filtersEl.innerHTML = cats.map(c=>{
+      const label = (c === 'all') ? 'все' : c;
+      const on = (activeCategory === c);
+      return `<span class="chip ${on?'on':''}" data-cat="${c}">${label}</span>`;
+    }).join('');
+    filtersEl.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        activeCategory = chip.dataset.cat;
+        render();
+      });
+    });
+  }
+
+  function filteredItems(){
+    let arr = itemsCache.filter(i => i.list_type === activeTab);
+
+    const q = (searchEl.value || '').trim().toLowerCase();
+    if(q){
+      arr = arr.filter(i => (i.name || '').toLowerCase().includes(q));
+    }
+
+    if(activeCategory !== 'all'){
+      arr = arr.filter(i => i.category === activeCategory);
+    }
+
+    if(onlyEffectEl.checked){
+      arr = arr.filter(i => (i.effect_text || '').trim().length > 0);
+    }
+
+    // newest first
+    arr.sort((a,b)=> new Date(b.updated_at) - new Date(a.updated_at));
+    return arr;
+  }
+
+  function escapeHtml(s){
+    return (s ?? '').toString()
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  function render(){
+    fillCategories();
+    renderFilters();
+
+    const arr = filteredItems();
+    listEl.innerHTML = arr.length ? arr.map(itemCard).join('') : `
+      <div class="muted">Пока пусто. Добавь предмет выше.</div>
+    `;
+
+    // bind item actions
+    listEl.querySelectorAll('[data-action]').forEach(btn=>{
+      btn.addEventListener('click', async (e)=>{
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        const item = itemsCache.find(x=>x.id===id);
+        if(!item) return;
+
+        if(action === 'inc') await updateQty(item, item.qty + 1);
+        if(action === 'dec') await updateQty(item, Math.max(0, item.qty - 1));
+        if(action === 'del') await deleteItem(item);
+        if(action === 'open' && item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+        if(action === 'edit') await quickEdit(item);
+        if(action === 'toQuick') await copyToQuick(item);
+      });
+    });
+
+    stateLine.textContent = inventoryId
+      ? `Показано: ${arr.length} • Синхронизация: Realtime`
+      : `Комната не выбрана.`;
+  }
+
+  function itemCard(i){
+    const hasEffect = (i.effect_text || '').trim().length > 0;
+    const urlBtn = i.url ? `<button class="mini" data-action="open" data-id="${i.id}">Ссылка</button>` : '';
+    const toQuickBtn = (activeTab === 'catalog')
+      ? `<button class="mini acc" data-action="toQuick" data-id="${i.id}">В инвентарь</button>`
+      : '';
+
+    return `
+      <div class="item">
+        <div class="itemTop">
+          <div>
+            <div class="itemName">${escapeHtml(i.name)}</div>
+            <div class="itemMeta">
+              <span class="tag">x${i.qty}</span>
+              <span class="tag">${escapeHtml(i.category)}</span>
+              ${i.list_type === 'catalog' ? `<span class="tag">база</span>` : `<span class="tag">быстрый доступ</span>`}
+            </div>
+          </div>
+          <div class="actions">
+            ${toQuickBtn}
+            ${urlBtn}
+            <button class="mini" data-action="dec" data-id="${i.id}">-</button>
+            <button class="mini" data-action="inc" data-id="${i.id}">+</button>
+            <button class="mini" data-action="edit" data-id="${i.id}">Правка</button>
+            <button class="mini bad" data-action="del" data-id="${i.id}">Удалить</button>
+          </div>
+        </div>
+
+        ${hasEffect ? `
+          <div class="effectFrame">
+            <div class="effectTitle">Эффект</div>
+            <div class="effectText">${escapeHtml(i.effect_text)}</div>
+          </div>
+        ` : ''}
+
+        ${ (i.notes||'').trim().length ? `
+          <div class="small">Заметка: ${escapeHtml(i.notes)}</div>
+        ` : '' }
+      </div>
+    `;
+  }
+
+  // --- supabase operations
+  async function ensureAnonSession(){
+    const { data: { session } } = await supabase.auth.getSession();
+    if(session?.user?.id){
+      sessionUserId = session.user.id;
+      myUid.textContent = sessionUserId;
+      return;
+    }
+    const { data, error } = await supabase.auth.signInAnonymously();
+    if(error){
+      hdrSub.textContent = "Ошибка анонимного входа";
+      console.error(error);
+      toast("Не удалось войти анонимно");
+      return;
+    }
+    sessionUserId = data.session.user.id;
+    myUid.textContent = sessionUserId;
+  }
+
+  async function createInventory(){
+    if(!sessionUserId) await ensureAnonSession();
+    const title = (newTitle.value || '').trim() || 'Инвентарь';
+    const code = randCode();
+
+    const { data, error } = await supabase
+      .from('inventories')
+      .insert({ title, join_code: code, created_by: sessionUserId })
+      .select('id, join_code, title')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast("Не удалось создать комнату");
+      return;
+    }
+
+    // Создателя триггером добавит в members как owner
+    await openInventoryById(data.id, data.join_code, data.title);
+    toast("Комната создана");
+  }
+
+  async function joinByCode(){
+    if(!sessionUserId) await ensureAnonSession();
+    const code = (roomCode.value || '').trim().toUpperCase();
+    if(!code){
+      toast("Введите код комнаты");
+      return;
+    }
+
+    const { data, error } = await supabase.rpc('join_inventory', { p_join_code: code });
+    if(error){
+      console.error(error);
+      toast("Не удалось войти по коду");
+      return;
+    }
+
+    // Узнаём метаданные комнаты (теперь у нас есть membership и RLS пустит SELECT)
+    const { data: inv, error: invErr } = await supabase
+      .from('inventories')
+      .select('id, join_code, title')
+      .eq('id', data)
+      .single();
+
+    if(invErr){
+      console.error(invErr);
+      toast("Вошли, но не смогли загрузить комнату");
+      return;
+    }
+
+    await openInventoryById(inv.id, inv.join_code, inv.title);
+    toast("Вы в комнате");
+  }
+
+  async function fetchMyRole(invId){
+    const { data, error } = await supabase
+      .from('inventory_members')
+      .select('role')
+      .eq('inventory_id', invId)
+      .eq('user_id', sessionUserId)
+      .single();
+
+    if(error){
+      console.error(error);
+      membershipRole = null;
+      myRole.textContent = '—';
+      return;
+    }
+    membershipRole = data.role;
+    myRole.textContent = membershipRole;
+  }
+
+  async function loadItems(invId){
+    const { data, error } = await supabase
+      .from('items')
+      .select('*')
+      .eq('inventory_id', invId);
+
+    if(error){
+      console.error(error);
+      toast("Не удалось загрузить предметы");
+      return;
+    }
+    itemsCache = data || [];
+  }
+
+  function subscribeRealtime(invId){
+    if(realtimeChannel){
+      supabase.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+
+    realtimeChannel = supabase.channel(`items:${invId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'items', filter: `inventory_id=eq.${invId}` },
+        (payload) => {
+          const { eventType, new: newRow, old: oldRow } = payload;
+
+          if(eventType === 'INSERT'){
+            itemsCache = [newRow, ...itemsCache.filter(x=>x.id!==newRow.id)];
+          } else if(eventType === 'UPDATE'){
+            itemsCache = itemsCache.map(x => x.id === newRow.id ? newRow : x);
+          } else if(eventType === 'DELETE'){
+            itemsCache = itemsCache.filter(x => x.id !== oldRow.id);
+          }
+          render();
+        }
+      )
+      .subscribe();
+  }
+
+  async function openInventoryById(id, code, title){
+    inventoryId = id;
+    currentJoinCode = code;
+    hdrTitle.textContent = title ? `D&D Инвентарь — ${title}` : 'D&D Инвентарь (онлайн)';
+    await fetchMyRole(inventoryId);
+    setHeader();
+    await loadItems(inventoryId);
+    subscribeRealtime(inventoryId);
+    render();
+
+    // запомним в localStorage
+    localStorage.setItem('dnd_inv_last', JSON.stringify({ inventoryId, join_code: currentJoinCode, title }));
+  }
+
+  async function addItem(){
+    if(!inventoryId){
+      toast("Сначала войдите в комнату");
+      return;
+    }
+    const name = (fName.value || '').trim();
+    if(!name){
+      toast("Введите название");
+      return;
+    }
+    const qty = Math.max(0, parseInt(fQty.value || '1', 10) || 1);
+    const category = fCat.value || 'прочее';
+    const url = (fUrl.value || '').trim() || null;
+    const effect_text = (fEffect.value || '').trim() || null;
+    const notes = (fNotes.value || '').trim() || null;
+
+    const row = {
+      inventory_id: inventoryId,
+      list_type: activeTab,
+      name,
+      qty,
+      category,
+      url,
+      effect_text,
+      notes,
+      created_by: sessionUserId
+    };
+
+    const { data, error } = await supabase
+      .from('items')
+      .insert(row)
+      .select('*')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast("Не удалось добавить");
+      return;
+    }
+
+    // Realtime вставит сам, но на всякий случай:
+    itemsCache = [data, ...itemsCache.filter(x=>x.id!==data.id)];
+    fName.value = '';
+    fUrl.value = '';
+    fEffect.value = '';
+    fNotes.value = '';
+    fQty.value = '1';
+    toast("Добавлено");
+    render();
+  }
+
+  async function updateQty(item, qty){
+    const { data, error } = await supabase
+      .from('items')
+      .update({ qty })
+      .eq('id', item.id)
+      .select('*')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast("Не удалось обновить количество");
+      return;
+    }
+    itemsCache = itemsCache.map(x => x.id === data.id ? data : x);
+    render();
+  }
+
+  async function deleteItem(item){
+    const ok = confirm(`Удалить "${item.name}"?`);
+    if(!ok) return;
+
+    const { error } = await supabase
+      .from('items')
+      .delete()
+      .eq('id', item.id);
+
+    if(error){
+      console.error(error);
+      toast("Не удалось удалить");
+      return;
+    }
+    itemsCache = itemsCache.filter(x=>x.id!==item.id);
+    toast("Удалено");
+    render();
+  }
+
+  async function quickEdit(item){
+    // лёгкая правка через prompt, без модалок
+    const name = prompt("Название", item.name);
+    if(name === null) return;
+
+    const qtyStr = prompt("Количество", String(item.qty));
+    if(qtyStr === null) return;
+
+    const qty = Math.max(0, parseInt(qtyStr, 10) || 0);
+    const category = prompt("Категория", item.category);
+    if(category === null) return;
+
+    const url = prompt("Ссылка (можно пусто)", item.url || '');
+    if(url === null) return;
+
+    const effect = prompt("Эффект (можно пусто)", item.effect_text || '');
+    if(effect === null) return;
+
+    const notes = prompt("Заметка (можно пусто)", item.notes || '');
+    if(notes === null) return;
+
+    const patch = {
+      name: name.trim() || item.name,
+      qty,
+      category: category.trim() || item.category,
+      url: (url.trim() || null),
+      effect_text: (effect.trim() || null),
+      notes: (notes.trim() || null),
+    };
+
+    const { data, error } = await supabase
+      .from('items')
+      .update(patch)
+      .eq('id', item.id)
+      .select('*')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast("Не удалось сохранить правки");
+      return;
+    }
+    itemsCache = itemsCache.map(x => x.id === data.id ? data : x);
+    toast("Сохранено");
+    render();
+  }
+
+  async function copyToQuick(item){
+    if(!inventoryId) return;
+
+    // Если в quick уже есть такой же name+category — увеличим qty, иначе создадим копию
+    const existing = itemsCache.find(x =>
+      x.inventory_id === inventoryId &&
+      x.list_type === 'quick' &&
+      x.name.toLowerCase() === item.name.toLowerCase() &&
+      x.category === item.category
+    );
+
+    if(existing){
+      await updateQty(existing, existing.qty + Math.max(1, item.qty || 1));
+      toast("Добавлено к существующему");
+      return;
+    }
+
+    const row = {
+      inventory_id: inventoryId,
+      list_type: 'quick',
+      name: item.name,
+      qty: Math.max(1, item.qty || 1),
+      category: item.category,
+      url: item.url,
+      effect_text: item.effect_text,
+      notes: item.notes,
+      created_by: sessionUserId
+    };
+
+    const { data, error } = await supabase
+      .from('items')
+      .insert(row)
+      .select('*')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast("Не удалось перенести в инвентарь");
+      return;
+    }
+    itemsCache = [data, ...itemsCache];
+    toast("Добавлено в инвентарь");
+    render();
+  }
+
+  async function seedMagicExamples(){
+    if(!inventoryId){
+      toast("Сначала войдите в комнату");
+      return;
+    }
+    const examples = [
+      { name:"Кольцо защиты", qty:1, category:"магические предметы", effect_text:"Вы получаете бонус +1 к КД и спасброскам.", url:"", notes:"" },
+      { name:"Плащ смещения", qty:1, category:"магические предметы", effect_text:"Пока вы носите плащ, атаки по вам совершаются с помехой (пока эффект не подавлен попаданием до конца хода).", url:"", notes:"" },
+      { name:"Жезл магических стрел", qty:1, category:"магические предметы", effect_text:"Имеет заряды. Тратя заряды, вы создаёте магические снаряды, которые автоматически попадают.", url:"", notes:"заряды: ?/?" },
+      { name:"Зелье лечения", qty:2, category:"расходники", effect_text:"Выпив, вы восстанавливаете хиты (по правилам вашего стола).", url:"", notes:"" },
+    ];
+
+    // не дублируем: проверим по имени в catalog
+    const existingNames = new Set(itemsCache.filter(x=>x.list_type==='catalog').map(x=>x.name.toLowerCase()));
+    const toInsert = examples
+      .filter(e => !existingNames.has(e.name.toLowerCase()))
+      .map(e => ({
+        inventory_id: inventoryId,
+        list_type: 'catalog',
+        name: e.name,
+        qty: e.qty,
+        category: e.category,
+        url: e.url || null,
+        effect_text: e.effect_text || null,
+        notes: e.notes || null,
+        created_by: sessionUserId
+      }));
+
+    if(!toInsert.length){
+      toast("Примеры уже есть в базе");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('items')
+      .insert(toInsert)
+      .select('*');
+
+    if(error){
+      console.error(error);
+      toast("Не удалось заполнить примерами");
+      return;
+    }
+
+    // Realtime тоже подтянет, но обновим локально сразу
+    itemsCache = [...(data || []), ...itemsCache];
+    toast("База заполнена примерами");
+    render();
+  }
+
+  function resetUIForNoRoom(){
+    inventoryId = null;
+    currentJoinCode = null;
+    membershipRole = null;
+    itemsCache = [];
+    myRole.textContent = '—';
+    hdrTitle.textContent = 'D&D Инвентарь (онлайн)';
+    setHeader();
+    render();
+  }
+
+  async function signOutHard(){
+    // для анонимки "выход" = сбросить локальную сессию
+    try{
+      await supabase.auth.signOut();
+    }catch(e){
+      console.warn(e);
+    }
+    localStorage.removeItem('dnd_inv_last');
+    roomCode.value = '';
+    newTitle.value = '';
+    myUid.textContent = '—';
+    sessionUserId = null;
+
+    if(realtimeChannel){
+      supabase.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+
+    resetUIForNoRoom();
+    await ensureAnonSession();
+    toast("Сессия сброшена");
+  }
+
+  // --- lightweight modal (без лишнего HTML)
+  function openRoomModal(){
+    // простая модалка через native prompt/confirm — минимальный код
+    // но для UX лучше: просто скроллим к карточке комнаты
+    document.querySelector('section.card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    toast("Введите код комнаты или создайте новую");
+  }
+
+  // --- events
+  tabs.forEach(t => t.addEventListener('click', ()=>{
+    setTab(t.dataset.tab);
+  }));
+
+  btnOpenRoom.addEventListener('click', openRoomModal);
+  btnSignOut.addEventListener('click', signOutHard);
+
+  btnCreate.addEventListener('click', createInventory);
+  btnJoin.addEventListener('click', joinByCode);
+
+  btnAdd.addEventListener('click', addItem);
+  btnSeedMagic.addEventListener('click', seedMagicExamples);
+
+  searchEl.addEventListener('input', render);
+  onlyEffectEl.addEventListener('change', render);
+
+  // enter submits
+  roomCode.addEventListener('keydown', (e)=>{ if(e.key==='Enter') joinByCode(); });
+  newTitle.addEventListener('keydown', (e)=>{ if(e.key==='Enter') createInventory(); });
+  fName.addEventListener('keydown', (e)=>{ if(e.key==='Enter') addItem(); });
+
+  // --- init
+  async function init(){
+    hdrSub.textContent = "Подключение…";
+    await ensureAnonSession();
+    hdrSub.textContent = "Готово. Выберите комнату.";
+
+    // Categories UI
+    renderFilters();
+    fillCategories();
+    setTab('quick');
+    render();
+
+    // auto-restore last room (если есть)
+    const lastRaw = localStorage.getItem('dnd_inv_last');
+    if(lastRaw){
+      try{
+        const last = JSON.parse(lastRaw);
+        if(last?.inventoryId && last?.join_code){
+          // Попробуем открыть напрямую (если членство сохранилось в базе — RLS пустит)
+          await openInventoryById(last.inventoryId, last.join_code, last.title || '');
+          toast("Открыта последняя комната");
+        }
+      }catch(e){
+        console.warn(e);
+      }
+    }
+
+    setHeader();
+  }
+
+  init();
+</script>
+</body>
+</html>
+
+
