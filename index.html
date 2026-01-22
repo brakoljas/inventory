@@ -493,7 +493,7 @@
 
     const { data, error } = await supabase
       .from('inventories')
-      .insert({ title, join_code: code, created_by: sessionUserId })
+      .insert({ title, join_code: code })
       .select('id, join_code, title')
       .single();
 
@@ -637,7 +637,6 @@
       url,
       effect_text,
       notes,
-      created_by: sessionUserId
     };
 
     const { data, error } = await supabase
@@ -772,7 +771,6 @@
       url: item.url,
       effect_text: item.effect_text,
       notes: item.notes,
-      created_by: sessionUserId
     };
 
     const { data, error } = await supabase
@@ -816,7 +814,6 @@
         url: e.url || null,
         effect_text: e.effect_text || null,
         notes: e.notes || null,
-        created_by: sessionUserId
       }));
 
     if(!toInsert.length){
