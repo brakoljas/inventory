@@ -487,27 +487,23 @@
   }
 
   async function createInventory(){
-    if(!sessionUserId) await ensureAnonSession();
-    const title = (newTitle.value || '').trim() || 'Инвентарь';
-    const code = randCode();
+  if(!sessionUserId) await ensureAnonSession();
+  const title = (newTitle.value || '').trim() || 'Инвентарь';
+  const code = randCode();
 
-   const { data, error } = await supabase
-  .from('inventories')
-  .insert({ title, join_code: code })   // БЕЗ created_by
-  .select('id, join_code, title')
-  .single();
+  const { data, error } = await supabase
+    .rpc('create_inventory', { p_title: title, p_join_code: code })
+    .single();
 
-
-    if(error){
-      console.error(error);
-      toast("Не удалось создать комнату");
-      return;
-    }
-
-    // Создателя триггером добавит в members как owner
-    await openInventoryById(data.id, data.join_code, data.title);
-    toast("Комната создана");
+  if(error){
+    console.error(error);
+    toast(`Не удалось создать: ${error.message}`);
+    return;
   }
+
+  await openInventoryById(data.id, data.join_code, data.title);
+  toast("Комната создана");
+}
 
   async function joinByCode(){
     if(!sessionUserId) await ensureAnonSession();
@@ -937,6 +933,7 @@
 </script>
 </body>
 </html>
+
 
 
 
