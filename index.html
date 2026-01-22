@@ -491,11 +491,12 @@
     const title = (newTitle.value || '').trim() || 'Инвентарь';
     const code = randCode();
 
-    const { data, error } = await supabase
-      .from('inventories')
-      .insert({ title, join_code: code })
-      .select('id, join_code, title')
-      .single();
+   const { data, error } = await supabase
+  .from('inventories')
+  .insert({ title, join_code: code })   // БЕЗ created_by
+  .select('id, join_code, title')
+  .single();
+
 
     if(error){
       console.error(error);
@@ -936,6 +937,7 @@
 </script>
 </body>
 </html>
+
 
 
 
