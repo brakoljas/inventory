@@ -24,12 +24,11 @@
       border-radius: var(--radius); box-shadow: var(--shadow); position:sticky; top:10px; backdrop-filter: blur(10px);
       z-index:10;
     }
-    .title{
-      display:flex; flex-direction:column; gap:4px;
-    }
+    .title{display:flex; flex-direction:column; gap:4px;}
     .title h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.2px}
     .title .sub{color:var(--muted);font-size:12px}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+
     .btn{
       border:1px solid var(--line); background: linear-gradient(180deg, #23284a, #171a2b);
       color:var(--text); padding:9px 12px; border-radius: 12px; cursor:pointer;
@@ -40,40 +39,48 @@
     .btn.acc{border-color:rgba(122,162,255,.6)}
     .btn.bad{border-color:rgba(255,107,107,.6)}
     .btn:disabled{opacity:.55;cursor:not-allowed}
+
     .pill{
       display:inline-flex; gap:8px; align-items:center;
       padding:8px 10px; border-radius:999px; background:rgba(35,40,74,.7); border:1px solid var(--line);
       color:var(--muted); font-size:12px;
     }
+
     .grid{display:grid; grid-template-columns: 360px 1fr; gap:14px; margin-top:14px}
     @media (max-width: 980px){ .grid{grid-template-columns: 1fr} header{position:relative;top:auto} }
+
     .card{
       background: rgba(23,26,43,.9); border:1px solid var(--line); border-radius: var(--radius);
       box-shadow: var(--shadow); padding:14px;
     }
     .card h2{margin:0 0 10px 0; font-size:14px}
     .muted{color:var(--muted); font-size:12px}
+
     input, select, textarea{
       width:100%; background:rgba(15,18,32,.8); border:1px solid var(--line); color:var(--text);
       border-radius:12px; padding:10px 11px; outline:none; font-size:13px;
     }
     textarea{min-height:84px; resize:vertical}
     label{font-size:12px;color:var(--muted)}
+
     .formRow{display:grid; grid-template-columns: 1fr 110px; gap:10px}
     .formRow3{display:grid; grid-template-columns: 1fr 120px 160px; gap:10px}
     @media(max-width: 520px){ .formRow,.formRow3{grid-template-columns:1fr} }
+
     .tabs{display:flex; gap:8px; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:10px}
     .tab{
       padding:9px 12px; border:1px solid var(--line); border-radius: 999px;
       background:rgba(35,40,74,.35); cursor:pointer; font-weight:700; font-size:13px; color:var(--muted);
     }
     .tab.active{background:rgba(122,162,255,.14); border-color:rgba(122,162,255,.5); color:var(--text)}
+
     .filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
     .chip{
       padding:7px 10px; border-radius: 999px; border:1px solid var(--line); background:rgba(35,40,74,.5);
       cursor:pointer; font-size:12px; color:var(--muted); user-select:none;
     }
     .chip.on{border-color:rgba(122,162,255,.5); background:rgba(122,162,255,.12); color:var(--text)}
+
     .list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
     .item{
       border:1px solid var(--line); border-radius: var(--radius); background: rgba(29,33,64,.45);
@@ -84,6 +91,7 @@
     .itemMeta{display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:12px}
     .tag{background:rgba(35,40,74,.8); border:1px solid var(--line); padding:4px 8px; border-radius:999px}
     .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+
     .mini{
       padding:7px 9px; border-radius: 10px; border:1px solid var(--line);
       background: rgba(15,18,32,.7); color:var(--text); cursor:pointer; font-weight:700; font-size:12px;
@@ -91,6 +99,7 @@
     .mini:hover{border-color:#3a4290}
     .mini.bad{border-color:rgba(255,107,107,.5)}
     .mini.acc{border-color:rgba(122,162,255,.5)}
+
     .effectFrame{
       border:1px dashed rgba(122,162,255,.35);
       background: rgba(15,18,32,.55);
@@ -99,17 +108,46 @@
     }
     .effectTitle{font-weight:800; font-size:12px; color:var(--muted); margin-bottom:6px}
     .effectText{white-space:pre-wrap; font-size:13px}
+
     .hr{height:1px;background:var(--line); margin:10px 0}
     .small{font-size:12px;color:var(--muted)}
     .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .right{margin-left:auto}
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+
     .toast{
       position:fixed; left:50%; transform:translateX(-50%);
       bottom:16px; background:rgba(23,26,43,.95); border:1px solid var(--line);
       border-radius: 999px; padding:10px 14px; color:var(--text); font-size:13px;
       box-shadow: var(--shadow); display:none; z-index:999;
     }
+
+    /* Modal */
+    .modal{ position:fixed; inset:0; display:none; z-index:1000; }
+    .modal.show{ display:block; }
+    .modalBackdrop{
+      position:absolute; inset:0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+    }
+    .modalCard{
+      position:relative;
+      width: min(720px, calc(100vw - 24px));
+      margin: 64px auto;
+      background: rgba(23,26,43,.96);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    @media(max-width:520px){
+      .modalCard{ margin: 18px auto; }
+    }
+    .modalHead{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .modalTitle{ font-weight:900; font-size:14px; }
+    .modalSub{ color:var(--muted); font-size:12px; margin-top:4px; }
   </style>
 </head>
 <body>
@@ -191,54 +229,87 @@
 
       <div class="hr"></div>
 
-      <h2 id="addTitle">Добавить в инвентарь</h2>
-      <div class="formRow3">
-        <div>
-          <label>Название</label>
-          <input id="fName" placeholder="Например: Верёвка, 50 фт" />
-        </div>
-        <div>
-          <label>Кол-во</label>
-          <input id="fQty" type="number" min="0" step="1" value="1" />
-        </div>
-        <div>
-          <label>Категория</label>
-          <select id="fCat"></select>
+      <div class="inline">
+        <h2 id="addTitle" style="margin:0;">Инвентарь</h2>
+        <div class="right inline">
+          <button class="btn acc" id="btnOpenAddModal">Добавить</button>
+          <button class="btn" id="btnSeedMagic">Заполнить базу примерами</button>
         </div>
       </div>
-
-      <div class="formRow" style="margin-top:10px;">
-        <div>
-          <label>Ссылка (опционально)</label>
-          <input id="fUrl" placeholder="https://…" />
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn acc" id="btnAdd">Добавить</button>
-        </div>
-      </div>
-
-      <div style="margin-top:10px;">
-        <label>Эффект / описание (если есть — появится отдельный фрейм)</label>
-        <textarea id="fEffect" placeholder="Например: Пока предмет при вас, вы получаете…"></textarea>
-      </div>
-
-      <div style="margin-top:10px;">
-        <label>Заметка (опционально)</label>
-        <input id="fNotes" placeholder="Например: требует настройку, заряды 3/3" />
+      <div class="small" id="addHint" style="margin-top:6px;">
+        Кнопка «Добавить» открывает окно с параметрами предмета для текущей вкладки.
       </div>
 
       <div class="hr"></div>
 
       <div class="inline">
         <div class="small" id="stateLine">Комната не выбрана.</div>
-        <div class="right inline">
-          <button class="btn" id="btnSeedMagic">Заполнить базу примерами</button>
-        </div>
       </div>
 
       <div class="list" id="list"></div>
     </section>
+  </div>
+</div>
+
+<!-- Add Item Modal -->
+<div class="modal" id="addModal" aria-hidden="true">
+  <div class="modalBackdrop" data-close="1"></div>
+
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+    <div class="modalHead">
+      <div>
+        <div class="modalTitle" id="addModalTitle">Добавить предмет</div>
+        <div class="modalSub" id="addModalSub">В текущую вкладку</div>
+      </div>
+      <button class="mini" id="btnCloseModal" title="Закрыть">✕</button>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="formRow3">
+      <div>
+        <label>Название</label>
+        <input id="mName" placeholder="Например: Верёвка, 50 фт" />
+      </div>
+      <div>
+        <label>Кол-во</label>
+        <input id="mQty" type="number" min="0" step="1" value="1" />
+      </div>
+      <div>
+        <label>Категория</label>
+        <select id="mCat"></select>
+      </div>
+    </div>
+
+    <div class="formRow" style="margin-top:10px;">
+      <div>
+        <label>Ссылка (опционально)</label>
+        <input id="mUrl" placeholder="https://…" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button class="btn" id="btnPasteLink" type="button">Вставить ссылку</button>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label>Эффект / описание</label>
+      <textarea id="mEffect" placeholder="Если заполнено — появится отдельный фрейм эффекта."></textarea>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label>Заметка (опционально)</label>
+      <input id="mNotes" placeholder="Например: требует настройку, заряды 3/3" />
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="inline">
+      <button class="btn" id="btnCancelModal" type="button">Отмена</button>
+      <div class="right inline">
+        <button class="btn acc" id="btnSaveModal" type="button">Сохранить</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -247,10 +318,8 @@
 <script type="module">
   import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm";
 
-  // 1) ВСТАВЬ СЮДА СВОИ ДАННЫЕ
   const SUPABASE_URL = "https://jwxumukkbfrifegegkpx.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eHVtdWtrYmZyaWZlZ2Vna3B4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwOTk1MTksImV4cCI6MjA4NDY3NTUxOX0.QlEnPldybUOZRYzrrhfk3pfge8wnyQX5QxbQvV8fZCo";
-
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // --- UI refs
@@ -276,19 +345,26 @@
   const searchEl = document.getElementById('search');
   const onlyEffectEl = document.getElementById('onlyEffect');
 
-  const fName = document.getElementById('fName');
-  const fQty = document.getElementById('fQty');
-  const fCat = document.getElementById('fCat');
-  const fUrl = document.getElementById('fUrl');
-  const fEffect = document.getElementById('fEffect');
-  const fNotes = document.getElementById('fNotes');
-  const btnAdd = document.getElementById('btnAdd');
-
+  const btnOpenAddModal = document.getElementById('btnOpenAddModal');
   const btnSeedMagic = document.getElementById('btnSeedMagic');
   const stateLine = document.getElementById('stateLine');
   const listEl = document.getElementById('list');
-
   const toastEl = document.getElementById('toast');
+
+  // --- modal refs
+  const addModal = document.getElementById('addModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const btnCancelModal = document.getElementById('btnCancelModal');
+  const btnSaveModal = document.getElementById('btnSaveModal');
+  const btnPasteLink = document.getElementById('btnPasteLink');
+  const addModalSub = document.getElementById('addModalSub');
+
+  const mName = document.getElementById('mName');
+  const mQty = document.getElementById('mQty');
+  const mCat = document.getElementById('mCat');
+  const mUrl = document.getElementById('mUrl');
+  const mEffect = document.getElementById('mEffect');
+  const mNotes = document.getElementById('mNotes');
 
   // --- app state
   const CATEGORIES = [
@@ -303,7 +379,7 @@
   let sessionUserId = null;
   let membershipRole = null;
 
-  let itemsCache = []; // items from supabase for current inventory
+  let itemsCache = [];
   let realtimeChannel = null;
 
   // --- helpers
@@ -315,7 +391,6 @@
   }
 
   function randCode(){
-    // читаемый код: WORD-XXXX
     const words = ["APPLE","RUNE","SWORD","OAK","MOON","FROST","WIND","FIRE","LAKE","IRON","GOLD","STONE"];
     const w = words[Math.floor(Math.random()*words.length)];
     const x = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4).padEnd(4,'X');
@@ -336,17 +411,8 @@
   function setTab(tab){
     activeTab = tab;
     tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-    addTitle.textContent = tab === 'quick' ? 'Добавить в инвентарь' : 'Добавить в базу (магические)';
-    // В базе по умолчанию категория "магические предметы"
-    if(tab === 'catalog' && (activeCategory === 'all')) {
-      // не принуждаем, но удобно держать рядом:
-    }
+    addTitle.textContent = tab === 'quick' ? 'Инвентарь' : 'База (магические)';
     render();
-  }
-
-  function fillCategories(){
-    fCat.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
-    fCat.value = (activeTab === 'catalog') ? 'магические предметы' : 'снаряжение';
   }
 
   function renderFilters(){
@@ -368,19 +434,12 @@
     let arr = itemsCache.filter(i => i.list_type === activeTab);
 
     const q = (searchEl.value || '').trim().toLowerCase();
-    if(q){
-      arr = arr.filter(i => (i.name || '').toLowerCase().includes(q));
-    }
+    if(q) arr = arr.filter(i => (i.name || '').toLowerCase().includes(q));
 
-    if(activeCategory !== 'all'){
-      arr = arr.filter(i => i.category === activeCategory);
-    }
+    if(activeCategory !== 'all') arr = arr.filter(i => i.category === activeCategory);
 
-    if(onlyEffectEl.checked){
-      arr = arr.filter(i => (i.effect_text || '').trim().length > 0);
-    }
+    if(onlyEffectEl.checked) arr = arr.filter(i => (i.effect_text || '').trim().length > 0);
 
-    // newest first
     arr.sort((a,b)=> new Date(b.updated_at) - new Date(a.updated_at));
     return arr;
   }
@@ -392,37 +451,6 @@
       .replaceAll('>','&gt;')
       .replaceAll('"','&quot;')
       .replaceAll("'",'&#039;');
-  }
-
-  function render(){
-    fillCategories();
-    renderFilters();
-
-    const arr = filteredItems();
-    listEl.innerHTML = arr.length ? arr.map(itemCard).join('') : `
-      <div class="muted">Пока пусто. Добавь предмет выше.</div>
-    `;
-
-    // bind item actions
-    listEl.querySelectorAll('[data-action]').forEach(btn=>{
-      btn.addEventListener('click', async (e)=>{
-        const id = btn.dataset.id;
-        const action = btn.dataset.action;
-        const item = itemsCache.find(x=>x.id===id);
-        if(!item) return;
-
-        if(action === 'inc') await updateQty(item, item.qty + 1);
-        if(action === 'dec') await updateQty(item, Math.max(0, item.qty - 1));
-        if(action === 'del') await deleteItem(item);
-        if(action === 'open' && item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
-        if(action === 'edit') await quickEdit(item);
-        if(action === 'toQuick') await copyToQuick(item);
-      });
-    });
-
-    stateLine.textContent = inventoryId
-      ? `Показано: ${arr.length} • Синхронизация: Realtime`
-      : `Комната не выбрана.`;
   }
 
   function itemCard(i){
@@ -467,6 +495,110 @@
     `;
   }
 
+  function render(){
+    renderFilters();
+    const arr = filteredItems();
+    listEl.innerHTML = arr.length ? arr.map(itemCard).join('') : `
+      <div class="muted">Пока пусто. Нажми «Добавить».</div>
+    `;
+
+    listEl.querySelectorAll('[data-action]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
+        const item = itemsCache.find(x=>x.id===id);
+        if(!item) return;
+
+        if(action === 'inc') await updateQty(item, item.qty + 1);
+        if(action === 'dec') await updateQty(item, Math.max(0, item.qty - 1));
+        if(action === 'del') await deleteItem(item);
+        if(action === 'open' && item.url) window.open(item.url, '_blank', 'noopener,noreferrer');
+        if(action === 'edit') await quickEdit(item);
+        if(action === 'toQuick') await copyToQuick(item);
+      });
+    });
+
+    stateLine.textContent = inventoryId
+      ? `Показано: ${arr.length} • Синхронизация: Realtime`
+      : `Комната не выбрана.`;
+  }
+
+  // --- modal logic
+  function fillModalCategories(){
+    mCat.innerHTML = CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+    mCat.value = (activeTab === 'catalog') ? 'магические предметы' : 'снаряжение';
+  }
+
+  function openAddModal(){
+    if(!inventoryId){
+      toast("Сначала войдите в комнату");
+      return;
+    }
+    fillModalCategories();
+    addModalSub.textContent = activeTab === 'quick'
+      ? "В инвентарь (быстрый доступ)"
+      : "В базу (магические)";
+
+    mName.value = '';
+    mQty.value = '1';
+    mUrl.value = '';
+    mEffect.value = '';
+    mNotes.value = '';
+
+    addModal.classList.add('show');
+    addModal.setAttribute('aria-hidden','false');
+    setTimeout(()=> mName.focus(), 0);
+  }
+
+  function closeAddModal(){
+    addModal.classList.remove('show');
+    addModal.setAttribute('aria-hidden','true');
+  }
+
+  async function addItemFromModal(){
+    if(!inventoryId){
+      toast("Сначала войдите в комнату");
+      return;
+    }
+
+    const name = (mName.value || '').trim();
+    if(!name){ toast("Введите название"); return; }
+
+    const qty = Math.max(0, parseInt(mQty.value || '1', 10) || 1);
+    const category = mCat.value || 'прочее';
+    const url = (mUrl.value || '').trim() || null;
+    const effect_text = (mEffect.value || '').trim() || null;
+    const notes = (mNotes.value || '').trim() || null;
+
+    const row = {
+      inventory_id: inventoryId,
+      list_type: activeTab,
+      name,
+      qty,
+      category,
+      url,
+      effect_text,
+      notes
+    };
+
+    const { data, error } = await supabase
+      .from('items')
+      .insert(row)
+      .select('*')
+      .single();
+
+    if(error){
+      console.error(error);
+      toast(`Не удалось добавить: ${error.message}`);
+      return;
+    }
+
+    itemsCache = [data, ...itemsCache.filter(x=>x.id!==data.id)];
+    toast("Добавлено");
+    closeAddModal();
+    render();
+  }
+
   // --- supabase operations
   async function ensureAnonSession(){
     const { data: { session } } = await supabase.auth.getSession();
@@ -487,23 +619,23 @@
   }
 
   async function createInventory(){
-  if(!sessionUserId) await ensureAnonSession();
-  const title = (newTitle.value || '').trim() || 'Инвентарь';
-  const code = randCode();
+    if(!sessionUserId) await ensureAnonSession();
+    const title = (newTitle.value || '').trim() || 'Инвентарь';
+    const code = randCode();
 
-  const { data, error } = await supabase
-    .rpc('create_inventory', { p_title: title, p_join_code: code })
-    .single();
+    const { data, error } = await supabase
+      .rpc('create_inventory', { p_title: title, p_join_code: code })
+      .single();
 
-  if(error){
-    console.error(error);
-    toast(`Не удалось создать: ${error.message}`);
-    return;
+    if(error){
+      console.error(error);
+      toast(`Не удалось создать: ${error.message}`);
+      return;
+    }
+
+    await openInventoryById(data.id, data.join_code, data.title);
+    toast("Комната создана");
   }
-
-  await openInventoryById(data.id, data.join_code, data.title);
-  toast("Комната создана");
-}
 
   async function joinByCode(){
     if(!sessionUserId) await ensureAnonSession();
@@ -516,11 +648,10 @@
     const { data, error } = await supabase.rpc('join_inventory', { p_join_code: code });
     if(error){
       console.error(error);
-      toast("Не удалось войти по коду");
+      toast(`Не удалось войти: ${error.message}`);
       return;
     }
 
-    // Узнаём метаданные комнаты (теперь у нас есть membership и RLS пустит SELECT)
     const { data: inv, error: invErr } = await supabase
       .from('inventories')
       .select('id, join_code, title')
@@ -529,7 +660,7 @@
 
     if(invErr){
       console.error(invErr);
-      toast("Вошли, но не смогли загрузить комнату");
+      toast(`Вошли, но не смогли загрузить комнату: ${invErr.message}`);
       return;
     }
 
@@ -563,7 +694,7 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось загрузить предметы");
+      toast(`Не удалось загрузить предметы: ${error.message}`);
       return;
     }
     itemsCache = data || [];
@@ -599,64 +730,16 @@
     inventoryId = id;
     currentJoinCode = code;
     hdrTitle.textContent = title ? `D&D Инвентарь — ${title}` : 'D&D Инвентарь (онлайн)';
+
     await fetchMyRole(inventoryId);
     setHeader();
+
     await loadItems(inventoryId);
     subscribeRealtime(inventoryId);
+
     render();
 
-    // запомним в localStorage
     localStorage.setItem('dnd_inv_last', JSON.stringify({ inventoryId, join_code: currentJoinCode, title }));
-  }
-
-  async function addItem(){
-    if(!inventoryId){
-      toast("Сначала войдите в комнату");
-      return;
-    }
-    const name = (fName.value || '').trim();
-    if(!name){
-      toast("Введите название");
-      return;
-    }
-    const qty = Math.max(0, parseInt(fQty.value || '1', 10) || 1);
-    const category = fCat.value || 'прочее';
-    const url = (fUrl.value || '').trim() || null;
-    const effect_text = (fEffect.value || '').trim() || null;
-    const notes = (fNotes.value || '').trim() || null;
-
-    const row = {
-      inventory_id: inventoryId,
-      list_type: activeTab,
-      name,
-      qty,
-      category,
-      url,
-      effect_text,
-      notes,
-    };
-
-    const { data, error } = await supabase
-      .from('items')
-      .insert(row)
-      .select('*')
-      .single();
-
-    if(error){
-      console.error(error);
-      toast("Не удалось добавить");
-      return;
-    }
-
-    // Realtime вставит сам, но на всякий случай:
-    itemsCache = [data, ...itemsCache.filter(x=>x.id!==data.id)];
-    fName.value = '';
-    fUrl.value = '';
-    fEffect.value = '';
-    fNotes.value = '';
-    fQty.value = '1';
-    toast("Добавлено");
-    render();
   }
 
   async function updateQty(item, qty){
@@ -669,7 +752,7 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось обновить количество");
+      toast(`Не удалось обновить количество: ${error.message}`);
       return;
     }
     itemsCache = itemsCache.map(x => x.id === data.id ? data : x);
@@ -687,7 +770,7 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось удалить");
+      toast(`Не удалось удалить: ${error.message}`);
       return;
     }
     itemsCache = itemsCache.filter(x=>x.id!==item.id);
@@ -696,7 +779,6 @@
   }
 
   async function quickEdit(item){
-    // лёгкая правка через prompt, без модалок
     const name = prompt("Название", item.name);
     if(name === null) return;
 
@@ -734,7 +816,7 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось сохранить правки");
+      toast(`Не удалось сохранить правки: ${error.message}`);
       return;
     }
     itemsCache = itemsCache.map(x => x.id === data.id ? data : x);
@@ -745,11 +827,10 @@
   async function copyToQuick(item){
     if(!inventoryId) return;
 
-    // Если в quick уже есть такой же name+category — увеличим qty, иначе создадим копию
     const existing = itemsCache.find(x =>
       x.inventory_id === inventoryId &&
       x.list_type === 'quick' &&
-      x.name.toLowerCase() === item.name.toLowerCase() &&
+      (x.name || '').toLowerCase() === (item.name || '').toLowerCase() &&
       x.category === item.category
     );
 
@@ -778,7 +859,7 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось перенести в инвентарь");
+      toast(`Не удалось перенести: ${error.message}`);
       return;
     }
     itemsCache = [data, ...itemsCache];
@@ -798,8 +879,7 @@
       { name:"Зелье лечения", qty:2, category:"расходники", effect_text:"Выпив, вы восстанавливаете хиты (по правилам вашего стола).", url:"", notes:"" },
     ];
 
-    // не дублируем: проверим по имени в catalog
-    const existingNames = new Set(itemsCache.filter(x=>x.list_type==='catalog').map(x=>x.name.toLowerCase()));
+    const existingNames = new Set(itemsCache.filter(x=>x.list_type==='catalog').map(x=>(x.name||'').toLowerCase()));
     const toInsert = examples
       .filter(e => !existingNames.has(e.name.toLowerCase()))
       .map(e => ({
@@ -825,11 +905,10 @@
 
     if(error){
       console.error(error);
-      toast("Не удалось заполнить примерами");
+      toast(`Не удалось заполнить примерами: ${error.message}`);
       return;
     }
 
-    // Realtime тоже подтянет, но обновим локально сразу
     itemsCache = [...(data || []), ...itemsCache];
     toast("База заполнена примерами");
     render();
@@ -847,12 +926,8 @@
   }
 
   async function signOutHard(){
-    // для анонимки "выход" = сбросить локальную сессию
-    try{
-      await supabase.auth.signOut();
-    }catch(e){
-      console.warn(e);
-    }
+    try{ await supabase.auth.signOut(); }catch(e){ console.warn(e); }
+
     localStorage.removeItem('dnd_inv_last');
     roomCode.value = '';
     newTitle.value = '';
@@ -869,18 +944,13 @@
     toast("Сессия сброшена");
   }
 
-  // --- lightweight modal (без лишнего HTML)
   function openRoomModal(){
-    // простая модалка через native prompt/confirm — минимальный код
-    // но для UX лучше: просто скроллим к карточке комнаты
     document.querySelector('section.card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     toast("Введите код комнаты или создайте новую");
   }
 
   // --- events
-  tabs.forEach(t => t.addEventListener('click', ()=>{
-    setTab(t.dataset.tab);
-  }));
+  tabs.forEach(t => t.addEventListener('click', ()=> setTab(t.dataset.tab) ));
 
   btnOpenRoom.addEventListener('click', openRoomModal);
   btnSignOut.addEventListener('click', signOutHard);
@@ -888,16 +958,43 @@
   btnCreate.addEventListener('click', createInventory);
   btnJoin.addEventListener('click', joinByCode);
 
-  btnAdd.addEventListener('click', addItem);
+  btnOpenAddModal.addEventListener('click', openAddModal);
   btnSeedMagic.addEventListener('click', seedMagicExamples);
 
   searchEl.addEventListener('input', render);
   onlyEffectEl.addEventListener('change', render);
 
-  // enter submits
+  // modal events
+  btnCloseModal.addEventListener('click', closeAddModal);
+  btnCancelModal.addEventListener('click', closeAddModal);
+  btnSaveModal.addEventListener('click', addItemFromModal);
+
+  addModal.addEventListener('click', (e)=>{
+    if(e.target?.dataset?.close) closeAddModal();
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && addModal.classList.contains('show')) closeAddModal();
+    if(e.key === 'Enter' && addModal.classList.contains('show')){
+      if(document.activeElement === mEffect) return;
+      e.preventDefault();
+      addItemFromModal();
+    }
+  });
+
+  btnPasteLink.addEventListener('click', async ()=>{
+    try{
+      const t = await navigator.clipboard.readText();
+      if(t && /^https?:\/\//i.test(t.trim())) mUrl.value = t.trim();
+      else toast("В буфере нет ссылки");
+    }catch(_){
+      toast("Не удалось прочитать буфер");
+    }
+  });
+
+  // enter submits for room
   roomCode.addEventListener('keydown', (e)=>{ if(e.key==='Enter') joinByCode(); });
   newTitle.addEventListener('keydown', (e)=>{ if(e.key==='Enter') createInventory(); });
-  fName.addEventListener('keydown', (e)=>{ if(e.key==='Enter') addItem(); });
 
   // --- init
   async function init(){
@@ -905,19 +1002,15 @@
     await ensureAnonSession();
     hdrSub.textContent = "Готово. Выберите комнату.";
 
-    // Categories UI
     renderFilters();
-    fillCategories();
     setTab('quick');
     render();
 
-    // auto-restore last room (если есть)
     const lastRaw = localStorage.getItem('dnd_inv_last');
     if(lastRaw){
       try{
         const last = JSON.parse(lastRaw);
         if(last?.inventoryId && last?.join_code){
-          // Попробуем открыть напрямую (если членство сохранилось в базе — RLS пустит)
           await openInventoryById(last.inventoryId, last.join_code, last.title || '');
           toast("Открыта последняя комната");
         }
@@ -933,9 +1026,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
